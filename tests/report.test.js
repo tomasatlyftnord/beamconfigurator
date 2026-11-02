@@ -17,9 +17,9 @@ test('böjspänning och utnyttjande följer samma beräkning som rapportens mome
   assert.equal(p.moment, p.momentLoad + p.momentSelf);
   assert.equal(p.deflection, p.deflectionLoad + p.deflectionSelf);
   const html = render(p.name, input);
-  assert.ok(html.includes('346,23 MPa'));
-  assert.ok(html.includes('97,53 %'));
-  assert.ok(html.includes('6,8778 mm'));
+  assert.ok(html.includes('<mn>346,23</mn><mtext> MPa</mtext>'));
+  assert.ok(html.includes('<mn>97,53</mn><mtext> %</mtext>'));
+  assert.ok(html.includes('<mn>6,8778</mn><mtext> mm</mtext>'));
   assert.ok(html.includes('Inget gränsvärde har angetts'));
 });
 test('rapportreferensen är text, och ogiltiga indata kan inte exporteras', () => {

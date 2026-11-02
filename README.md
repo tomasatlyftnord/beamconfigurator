@@ -35,7 +35,7 @@ py -3 -m http.server 8000 --bind 127.0.0.1
 
 ### Om du ser en gammal version
 
-Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.3 · TIBNOR 2023 · TABELLDATA** högst upp.
+Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.4 · TIBNOR 2023 · TABELLDATA** högst upp.
 
 ## Användning
 
@@ -49,6 +49,8 @@ Ange c-c mellan lastpunkterna i mm och total lastvikt i kg. Välj stålkvalitet 
 4. Granska rapporten och klicka **Spara som PDF**. Välj **Spara som PDF** i webbläsarens utskriftsdialog, A4 och utan webbläsarens sidhuvud/sidfot.
 
 Rapporten är formgiven för två A4-sidor med indata, tabellvärden och källsida, lastmodell, böjmoment, böjspänning, böjutnyttjande samt nedböjning med formler och insatta värden. Datum/tid anges i Europe/Stockholm. Egenvikt ingår; nedböjning räknas utan lastfaktor och utan godkänd/underkänd-bedömning eftersom inget gränsvärde anges. Även en för svag profil kan väljas, men dess rapport markerar överskridet böjvillkor. Ogiltiga indata blockerar rapportöppning. Varje ny rapport använder aktuella indata; en redan öppnad rapport är en ögonblicksbild.
+
+Ekvationerna använder webbläsarens inbyggda MathML-stöd för riktiga bråk, exponenter och index. Använd en aktuell version av Chrome, Edge, Firefox eller Safari. Ingen internetanslutning eller extern matematiktjänst behövs.
 
 PDF skapas lokalt genom webbläsarens utskriftsfunktion. Inga data skickas till en extern tjänst och inga PDF-bibliotek behöver installeras.
 
