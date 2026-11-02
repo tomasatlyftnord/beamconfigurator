@@ -64,9 +64,11 @@ async function main() {
     if (!ready) console.error(await evaluate('JSON.stringify({url:location.href,state:document.readyState,body:document.body?.innerText,beam:typeof Beam})'));
     assert.ok(ready, 'Sidan ska räkna vid start');
     assert.equal(await evaluate('document.querySelector(".result-top h3").textContent'), 'VKR 80 × 80 × 4');
-    assert.ok(await evaluate('document.getElementById("result").textContent.includes("Tabellens Wₑₗ")'));
+    assert.ok(await evaluate('document.getElementById("result").textContent.includes("Tabellens Wx")'));
     assert.ok(await evaluate('!document.body.textContent.includes("Profilens W, modell")'));
     assert.ok(await evaluate('document.querySelector(".tag").textContent.includes("TABELLDATA")'));
+    assert.equal(await evaluate('document.getElementById("allowable-stress").readOnly'), true);
+    assert.ok(await evaluate('document.getElementById("allowable-stress").value.includes("355")'));
     await evaluate('document.getElementById("mass").value = 2000; document.getElementById("mass").dispatchEvent(new Event("input", {bubbles:true}))');
     assert.notEqual(await evaluate('document.querySelector(".result-top h3").textContent'), 'VKR 80 × 80 × 4');
     await evaluate('document.getElementById("toggle-profiles").click()');
@@ -98,6 +100,8 @@ async function main() {
     assert.ok(await evaluate('document.title.includes("VKR_80x80x4")'));
     await evaluate('window.dispatchEvent(new Event("afterprint"))');
     assert.equal(await evaluate('document.title'), 'Beamconfigurator · Lyftok');
+    assert.ok(await evaluate('!document.getElementById("report-content").textContent.includes("Skjuvvillkor")'));
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("9,82")'));
     const pdf = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true });
     const pdfBytes = Buffer.from(pdf.data, 'base64');
     assert.equal(pdfBytes.subarray(0, 4).toString(), '%PDF');

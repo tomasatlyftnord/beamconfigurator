@@ -10,6 +10,6 @@ Originalfilens SHA-256: `4977fea5282dbf5ed1e64fe8217be164a4cb46c26a40bdbaa1fe315
 
 Exempel, tryckt sida 20: VKR 40 × 40 × 4 har Wel = 5,91 cm³, I = 11,8 cm⁴, g = 4,39 kg/m och A = 559 mm². Värdena är oberoende avrundade i källan; W ska därför inte räknas om från I.
 
-Tabellen omfattar nominella sektionsdata och är ingen bekräftelse av aktuellt lagersortiment. Rektangulära VKR och KKR har inte importerats. Skjuvarean i beräkningsmodellen är fortfarande en separat geometrisk uppskattning, inte ett tabellvärde.
+Tabellen omfattar nominella sektionsdata och är ingen bekräftelse av aktuellt lagersortiment. Rektangulära VKR och KKR har inte importerats. Appen och rapporten betecknar tabellens elastiska böjmotstånd som W_x. Källfilens Wel-kolumnnamn bevaras i CSV-filen.
 
 Kör `python3 scripts/build_profiles.py` efter en granskad ändring i CSV-filen för att generera `profiles.js`. Webbsidan använder den genererade filen direkt, utan CSV-hämtning eller internetanslutning.
