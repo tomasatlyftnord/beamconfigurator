@@ -102,12 +102,22 @@ async function main() {
     assert.equal(await evaluate('document.title'), 'Beamconfigurator · Lyftok');
     assert.ok(await evaluate('!document.getElementById("report-content").textContent.includes("Skjuvvillkor")'));
     assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("9,82")'));
-    const pdf = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true });
+    assert.ok(await evaluate('!document.getElementById("report-content").textContent.includes("Beamconfigurator")'));
+    const pdf = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true });
     const pdfBytes = Buffer.from(pdf.data, 'base64');
     assert.equal(pdfBytes.subarray(0, 4).toString(), '%PDF');
     const pdfPath = process.env.BEAM_TEST_PDF || join(tmpdir(), 'beam-report-example.pdf');
     await writeFile(pdfPath, pdfBytes);
     console.log(`PDF skapad: ${pdfPath}`);
+    await evaluate('document.getElementById("close-report").click()');
+    // Kontroll av rapporterad avvikelse: inmatade 400 kg ska förbli 400 kg.
+    await evaluate('document.getElementById("mass").value=400; document.getElementById("span").value=350; document.getElementById("factor").value=2; document.getElementById("mass").dispatchEvent(new Event("input", {bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("mass").valueAsNumber'), 400);
+    await evaluate(`Array.from(document.querySelectorAll('input[name="report-profile"]')).find(p => p.value === 'VKR 40 × 40 × 3').click(); document.getElementById('open-report').click()`);
+    assert.equal(await evaluate('Array.from(document.querySelectorAll(".report-data > div")).find(row => row.querySelector("dt").textContent === "Total lastvikt, m").querySelector("dd").textContent'), '400,00 kg');
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("3 928,00")'));
+    const casePDF = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true });
+    await writeFile(join(tmpdir(), 'beam-400kg-350mm.pdf'), Buffer.from(casePDF.data, 'base64'));
     await evaluate('document.getElementById("close-report").click()');
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
     assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Mobilläget ska inte ge horisontell sidskroll');

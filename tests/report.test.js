@@ -23,10 +23,12 @@ test('böjspänning och utnyttjande följer samma beräkning som rapportens mome
   assert.ok(html.includes('Inget gränsvärde har angetts'));
 });
 test('rapportreferensen är text, och ogiltiga indata kan inte exporteras', () => {
-  const html = render('VKR 80 × 80 × 4', input, '<img src=x onerror=alert(1)>', new Date('2026-11-02T12:00:00Z'));
+  const html = render('VKR 80 × 80 × 4', input, '<img src=x onerror=alert(1)>');
   assert.ok(html.includes('&lt;img'));
   assert.ok(!html.includes('<img'));
-  assert.ok(html.includes('13:00'));
+  assert.ok(!html.includes('Beamconfigurator'));
+  assert.ok(!html.includes('Europe/Stockholm'));
+  assert.ok(!html.includes('<a '));
   assert.throws(() => render('VKR saknas', input), RangeError);
   assert.throws(() => render('VKR 80 × 80 × 4', { ...input, mass: NaN }), RangeError);
 });
@@ -47,4 +49,22 @@ test('rapporten använder nya beteckningar och saknar skjuvavsnitt och egenvikts
   assert.ok(html.includes('9,82 m/s²'));
   assert.ok(!html.includes('Skjuvvillkor och beräkningens omfattning'));
   assert.ok(!html.includes('report-shear'));
+});
+
+test('hållfasthetsuttalandet för n=2 anger rätt resultat utan att intyga standarduppfyllelse', () => {
+  const html = render('VKR 80 × 80 × 4', input);
+  assert.ok(html.includes('Balkens elastiska böjvillkor uppfylls vid två gånger angiven last.'));
+  assert.ok(html.includes('Vid n = 2,00 blir böjspänningen 343,36 MPa och nyttjandegraden 96,72 %'));
+  assert.ok(html.includes('SS-EN 13155'));
+  assert.ok(html.includes('standarduppfyllelse kan därför inte intygas'));
+});
+
+test('ett uppfyllt böjvillkor vid n=1 får inte ge ett positivt uttalande vid n=2', () => {
+  const p = profiles.find(p => p.name === 'VKR 60 × 60 × 4');
+  assert.ok(evaluate(p, { ...input, factor: 1 }).utilization < 1);
+  assert.ok(evaluate(p, input).utilization > 1);
+  const html = render(p.name, { ...input, factor: 1 });
+  assert.ok(html.includes('Böjkontroll: uppfyller beräkningsvillkoret'));
+  assert.ok(html.includes('Balkens elastiska böjvillkor uppfylls inte vid två gånger angiven last.'));
+  assert.ok(html.includes('en separat kontroll med n = 2,00'));
 });

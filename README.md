@@ -35,7 +35,7 @@ py -3 -m http.server 8000 --bind 127.0.0.1
 
 ### Om du ser en gammal version
 
-Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.6 · TIBNOR 2023 · TABELLDATA** högst upp.
+Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.8 · TIBNOR 2023 · TABELLDATA** högst upp.
 
 ## Färger
 
@@ -52,7 +52,9 @@ Ange c-c mellan lastpunkterna i mm och total lastvikt i kg. Ange säkerhetsfakto
 3. Fyll eventuellt i en rapportreferens och välj **Visa rapport / PDF**.
 4. Granska rapporten och klicka **Spara som PDF**. Välj **Spara som PDF** i webbläsarens utskriftsdialog, A4 och utan webbläsarens sidhuvud/sidfot.
 
-Rapporten är formgiven för två A4-sidor med indata, tabellvärden och källsida, lastmodell, böjmoment, böjspänning, böjutnyttjande samt nedböjning med formler och insatta värden. Datum/tid anges i Europe/Stockholm. Egenvikt försummas i både böjning och nedböjning; nedböjning räknas utan säkerhetsfaktor n och utan godkänd/underkänd-bedömning eftersom inget gränsvärde anges. Även en för svag profil kan väljas, men dess rapport markerar överskridet böjvillkor. Ogiltiga indata blockerar rapportöppning. Varje ny rapport använder aktuella indata; en redan öppnad rapport är en ögonblicksbild.
+Rapporten är formgiven för två A4-sidor med indata, tabellvärden och källsida, lastmodell, böjmoment, böjspänning, böjutnyttjande samt nedböjning med formler och insatta värden. Rapporten saknar produktnamn, datum och länkar i sidhuvud/sidfot. Sidnumrering och eventuell rapportreferens behålls. Utskriftslayouten använder egna inre marginaler för att undvika webbläsarens automatiska sidhuvud/sidfot. Egenvikt försummas i både böjning och nedböjning; nedböjning räknas utan säkerhetsfaktor n och utan godkänd/underkänd-bedömning eftersom inget gränsvärde anges. Även en för svag profil kan väljas, men dess rapport markerar överskridet böjvillkor. Ogiltiga indata blockerar rapportöppning. Varje ny rapport använder aktuella indata; en redan öppnad rapport är en ögonblicksbild.
+
+Rapporten innehåller också ett hållfasthetsuttalande för **två gånger angiven last, n = 2**. Det kontrolleras separat för vald profil även om formulärets säkerhetsfaktor är en annan. Uttalandet anger om det elastiska böjvillkoret uppfylls, med böjspänning och nyttjandegrad. Hänvisningen till **SS-EN 13155** beskriver rapporten som dimensioneringsunderlag för fortsatt verifiering, inte ett intyg om att hela lyftoket uppfyller standarden.
 
 Ekvationerna använder webbläsarens inbyggda MathML-stöd för riktiga bråk, exponenter och index. Använd en aktuell version av Chrome, Edge, Firefox eller Safari. Ingen internetanslutning eller extern matematiktjänst behövs.
 
