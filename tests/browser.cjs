@@ -7,7 +7,7 @@ const { join, resolve } = require('node:path');
 const assert = require('node:assert/strict');
 
 async function main() {
-  const files = { '/': ['index.html', 'text/html'], '/style.css': ['style.css', 'text/css'], '/report.css': ['report.css', 'text/css'], '/report.js': ['report.js', 'text/javascript'], '/profiles.js': ['profiles.js', 'text/javascript'], '/beam.js': ['beam.js', 'text/javascript'], '/app.js': ['app.js', 'text/javascript'] };
+  const files = { '/': ['index.html', 'text/html'], '/style.css': ['style.css', 'text/css'], '/report.css': ['report.css', 'text/css'], '/report.js': ['report.js', 'text/javascript'], '/profiles.js': ['profiles.js', 'text/javascript'], '/beam.js': ['beam.js', 'text/javascript'], '/app.js': ['app.js', 'text/javascript'], '/calculations.js': ['calculations.js', 'text/javascript'], '/c-hook-report.js': ['c-hook-report.js', 'text/javascript'], '/load-cases.js': ['load-cases.js', 'text/javascript'], '/case-ui.js': ['case-ui.js', 'text/javascript'], '/c2.js': ['c2.js', 'text/javascript'], '/c2-case.js': ['c2-case.js', 'text/javascript'], '/c2-report.js': ['c2-report.js', 'text/javascript'], '/c4.js': ['c4.js', 'text/javascript'], '/c4-case.js': ['c4-case.js', 'text/javascript'], '/c4-report.js': ['c4-report.js', 'text/javascript'], '/plate-shear.js': ['plate-shear.js', 'text/javascript'], '/plate-shear-cases.js': ['plate-shear-cases.js', 'text/javascript'], '/plate-shear-report.js': ['plate-shear-report.js', 'text/javascript'], '/asymmetric-beam.js': ['asymmetric-beam.js', 'text/javascript'], '/asymmetric-beam-case.js': ['asymmetric-beam-case.js', 'text/javascript'], '/asymmetric-beam-report.js': ['asymmetric-beam-report.js', 'text/javascript'] };
   const server = createServer(async (req, res) => {
     const file = files[new URL(req.url, 'http://127.0.0.1').pathname];
     if (!file) { res.writeHead(404).end(); return; }
@@ -66,7 +66,7 @@ async function main() {
     assert.equal(await evaluate('document.querySelector(".result-top h3").textContent'), 'VKR 80 × 80 × 4');
     assert.ok(await evaluate('document.getElementById("result").textContent.includes("Tabellens Wx")'));
     assert.ok(await evaluate('!document.body.textContent.includes("Profilens W, modell")'));
-    assert.ok(await evaluate('document.querySelector(".tag").textContent.includes("TABELLDATA")'));
+    assert.ok(await evaluate('document.querySelector(".tag").textContent.includes("BERÄKNINGSFALL")'));
     assert.equal(await evaluate('document.getElementById("allowable-stress").readOnly'), true);
     assert.ok(await evaluate('document.getElementById("allowable-stress").value.includes("355")'));
     await evaluate('document.getElementById("mass").value = 2000; document.getElementById("mass").dispatchEvent(new Event("input", {bubbles:true}))');
@@ -121,7 +121,149 @@ async function main() {
     await evaluate('document.getElementById("close-report").click()');
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
     assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Mobilläget ska inte ge horisontell sidskroll');
-    console.log('PASS: lokal HTTP-server, standardresultat, ändrad last, profillista, ogiltig indata, extrem last och mobilbredd.');
+    // Nytt beräkningsfall använder egna indata och rapport, utan VKR-resultat.
+    await evaluate('document.getElementById("case-select").value="c-hook"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("beam-case").hidden'), true);
+    assert.equal(await evaluate('document.getElementById("custom-case").hidden'), false);
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("299,51")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("63,96")'));
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), false);
+    await evaluate('document.getElementById("case-report").click()');
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("C-KROK")'));
+    assert.ok(await evaluate('!document.getElementById("report-content").textContent.includes("Tibnor")'));
+    await evaluate('window.print = () => { window.testPrinted = true; }; document.getElementById("print-report").click()');
+    assert.ok(await evaluate('document.title.includes("C-krok")'));
+    await evaluate('window.dispatchEvent(new Event("afterprint"))');
+    const cPDF = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true });
+    await writeFile(join(tmpdir(), 'c-hook-report-example.pdf'), Buffer.from(cPDF.data, 'base64'));
+    await evaluate('document.getElementById("close-report").click()');
+    // Lastläge utanför modellen får inte visas som en giltig vippningskontroll.
+    await evaluate('document.getElementById("case-loadPosition").value="other"; document.getElementById("case-loadPosition").dispatchEvent(new Event("change",{bubbles:true}))');
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("Mcr-jämförelse visas inte")'));
+    await evaluate('document.getElementById("case-mass").value=""; document.getElementById("case-mass").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), true);
+    assert.ok(await evaluate('!document.getElementById("case-error").hidden'));
+    await evaluate('document.getElementById("case-mass").value=400; document.getElementById("case-mass").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), false);
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
+    // Byte tillbaka bevarar lyftokets tidigare 400 kg och 350 mm.
+    await evaluate('document.getElementById("case-select").value="lifting-beam"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("mass").valueAsNumber'), 400);
+    assert.equal(await evaluate('document.getElementById("span").valueAsNumber'), 350);
+    assert.equal(await evaluate('document.getElementById("beam-case").hidden'), false);
+    await evaluate('document.getElementById("case-select").value="c-hook"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-loadPosition").value'), 'other');
+    // C2 är ett tredje självständigt lastfall enligt PDF-underlaget.
+    await evaluate('document.getElementById("case-select").value="c2"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("72,01")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("9,82")'));
+    assert.ok(await evaluate('!document.getElementById("case-result").textContent.includes("Mcr")'));
+    assert.equal(await evaluate('document.querySelectorAll("#case-select option").length'), 7);
+    await evaluate('document.getElementById("case-report").click()');
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("C2")'));
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("213")'));
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("Beräkning - C2.pdf")'));
+    assert.ok(await evaluate('!document.getElementById("report-content").textContent.includes("Beamconfigurator")'));
+    const c2PDF = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true });
+    await writeFile(join(tmpdir(), 'c2-report-example.pdf'), Buffer.from(c2PDF.data, 'base64'));
+    await evaluate('document.getElementById("close-report").click()');
+    await evaluate('document.getElementById("case-t").value=0; document.getElementById("case-t").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), true);
+    await evaluate('document.getElementById("case-t").value=20; document.getElementById("case-t").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), false);
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("36,01")'));
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
+    await evaluate('document.getElementById("case-select").value="c-hook"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-loadPosition").value'), 'other');
+    await evaluate('document.getElementById("case-select").value="c2"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-t").valueAsNumber'), 20);
+    // C4 använder källexemplet och faktorerad kraft även för böjnedböjningen.
+    await evaluate('document.getElementById("case-select").value="c4"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.querySelectorAll("#case-select option").length'), 7);
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("53,03")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("0,003409")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("2 455")'));
+    await evaluate('document.getElementById("case-report").click()');
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("C4")'));
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("Rutin_Beräkning av C4 - Lastkrok.pdf")'));
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("213")'));
+    assert.ok(await evaluate('!document.getElementById("report-content").textContent.includes("Beamconfigurator")'));
+    const c4PDF = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true });
+    await writeFile(join(tmpdir(), 'c4-report-example.pdf'), Buffer.from(c4PDF.data, 'base64'));
+    await evaluate('document.getElementById("close-report").click()');
+    await evaluate('document.getElementById("case-factor").value=1; document.getElementById("case-factor").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("26,51")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("0,001704")'));
+    await evaluate('document.getElementById("case-k").value=0; document.getElementById("case-k").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), true);
+    await evaluate('document.getElementById("case-k").value=25; document.getElementById("case-k").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), false);
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
+    await evaluate('document.getElementById("case-select").value="c2"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-t").valueAsNumber'), 20);
+    await evaluate('document.getElementById("case-select").value="c4"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-factor").valueAsNumber'), 1);
+    // C1 och L1 skiljer strikt på två respektive en verksam skjuvyta.
+    for (const [id, expectedStress, source] of [['c1', '15,712', 'Beräkning - C1.pdf'], ['l1', '31,424', 'Beräkning - L1.pdf']]) {
+      await evaluate(`document.getElementById('case-select').value='${id}'; document.getElementById('case-select').dispatchEvent(new Event('change'))`);
+      assert.ok(await evaluate(`document.getElementById('case-result').textContent.includes('${expectedStress}')`));
+      assert.ok(await evaluate('!document.getElementById("case-result").textContent.includes("Böjspänning")'));
+      await evaluate('document.getElementById("case-report").click()');
+      assert.ok(await evaluate(`document.getElementById('report-content').textContent.includes('${source}')`));
+      assert.ok(await evaluate('!document.getElementById("report-content").textContent.includes("Beamconfigurator")'));
+      const pdf = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true });
+      await writeFile(join(tmpdir(), `${id}-report-example.pdf`), Buffer.from(pdf.data, 'base64'));
+      await evaluate('document.getElementById("close-report").click()');
+      assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
+    }
+    await evaluate('document.getElementById("case-select").value="c1"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    await evaluate('document.getElementById("case-k").value=50; document.getElementById("case-k").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("7,856")'));
+    await evaluate('document.getElementById("case-t").value=0; document.getElementById("case-t").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), true);
+    await evaluate('document.getElementById("case-t").value=10; document.getElementById("case-t").dispatchEvent(new Event("input",{bubbles:true}))');
+    await evaluate('document.getElementById("case-select").value="l1"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-k").valueAsNumber'), 25);
+    await evaluate('document.getElementById("case-select").value="c1"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-k").valueAsNumber'), 50);
+    // Asymmetriskt lyft: lastbalans, egen profiljämförelse och vald rapportprofil.
+    await evaluate('document.getElementById("case-select").value="asymmetric-beam"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("750,00")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("250,00")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("VKR 70 × 70 × 4")'));
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), true);
+    assert.equal(await evaluate('document.getElementById("case-profiles").hidden'), false);
+    await evaluate('document.getElementById("case-profiles-toggle").click()');
+    assert.equal(await evaluate('document.querySelectorAll("#case-profile-rows tr").length'), 65);
+    await evaluate(`Array.from(document.querySelectorAll('input[name="case-profile"]')).find(p=>p.value==='VKR 70 × 70 × 4').click()`);
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), false);
+    await evaluate('document.getElementById("case-report").click()');
+    assert.ok(await evaluate('document.querySelector(".report-profile").textContent.includes("VKR 70 × 70 × 4")'));
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("750,00")'));
+    assert.ok(await evaluate('document.getElementById("report-content").textContent.includes("250,00")'));
+    const asymPDF = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true });
+    await writeFile(join(tmpdir(), 'asymmetric-beam-report-example.pdf'), Buffer.from(asymPDF.data, 'base64'));
+    await evaluate('document.getElementById("close-report").click()');
+    await evaluate(`Array.from(document.querySelectorAll('input[name="case-profile"]')).find(p=>p.value==='VKR 40 × 40 × 3').click(); document.getElementById('case-report').click()`);
+    assert.ok(await evaluate('document.querySelector(".report-profile").textContent.includes("VKR 40 × 40 × 3")'));
+    assert.ok(await evaluate('document.querySelector(".report-verdict").classList.contains("report-fail")'));
+    await evaluate('document.getElementById("close-report").click()');
+    await evaluate('document.getElementById("case-liftPosition").value=1000; document.getElementById("case-liftPosition").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("500,00")'));
+    assert.ok(await evaluate('document.getElementById("case-result").textContent.includes("VKR 80 × 80 × 4")'));
+    await evaluate('document.getElementById("case-liftPosition").value=0; document.getElementById("case-liftPosition").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), true);
+    assert.equal(await evaluate('document.getElementById("case-profiles").hidden'), true);
+    await evaluate('document.getElementById("case-liftPosition").value=500; document.getElementById("case-liftPosition").dispatchEvent(new Event("input",{bubbles:true}))');
+    assert.equal(await evaluate('document.getElementById("case-report").disabled'), false);
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
+    await evaluate('document.getElementById("case-select").value="lifting-beam"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("span").valueAsNumber'), 350);
+    await evaluate('document.getElementById("case-select").value="asymmetric-beam"; document.getElementById("case-select").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.getElementById("case-span").valueAsNumber'), 2000);
+    assert.equal(await evaluate('document.getElementById("case-liftPosition").valueAsNumber'), 500);
+    assert.equal(await evaluate('document.querySelector("#case-profile-rows input:checked").value'), 'VKR 40 × 40 × 3');
+    console.log('PASS: sju lastfall, asymmetrisk lastbalans, profilval, rapporter, felhantering och mobilbredd.');
   } finally {
     if (ws) ws.close();
     const exited = new Promise(r => browser.once('exit', r));

@@ -8,3 +8,6 @@
 /* Rapporten bär bara sidnumrering, utan produktnamn eller datum. */
 .report-masthead,.report-footer{justify-content:flex-end}
 .report-strength{padding:11px 13px;background:#fff9df;border-left:3px solid var(--yellow);font-size:11px;line-height:1.5}.report-strength>b{display:block}.report-strength p{font-size:10px;margin:7px 0 0}.strength-fail{background:#fff1ec;border-color:#ad4927;color:#8e351c}.report-standard{font-size:10px;line-height:1.5;margin:10px 0}@media print{.report-strength,.report-standard{break-inside:avoid}}
+
+/* Mer geometri och snittdata i C-rapporten: kompakt sättning inom två A4-sidor. */
+.hook-calculation-report .report-title{margin-bottom:12px}.hook-calculation-report .report-highlights{margin-bottom:12px}.hook-calculation-report .report-data{gap:5px 20px}.hook-calculation-report .report-data>div{padding-bottom:4px}.hook-calculation-report .report-copy,.hook-calculation-report .report-source{font-size:9px}.hook-calculation-report .report-equation math{font-size:13px;margin:5px 0}@media print{.hook-calculation-report h2{margin-top:11px;margin-bottom:7px}.hook-calculation-report .report-equation math{font-size:12px;margin:5px 0}.hook-calculation-report .report-masthead{margin-bottom:14px}.hook-calculation-report .report-highlights strong{font-size:20px}}

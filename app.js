@@ -61,13 +61,14 @@ document.getElementById('profile-rows').addEventListener('change', event => {
 const reportDialog = document.getElementById('report-dialog');
 document.getElementById('open-report').addEventListener('click', () => {
   if (!current || !currentInput || !reportProfile) return;
-  document.getElementById('report-content').innerHTML = BeamReport.render(reportProfile, currentInput, document.getElementById('report-reference').value);
+  document.getElementById('report-content').innerHTML = LoadCases.get('lifting-beam').renderReport({ profileName: reportProfile, input: currentInput, reference: document.getElementById('report-reference').value });
+  window.activeReportName = reportProfile;
   reportDialog.showModal();
 });
 document.getElementById('close-report').addEventListener('click', () => reportDialog.close());
 document.getElementById('print-report').addEventListener('click', () => {
   printTitle = document.title;
-  document.title = `Kontrollberakning_${reportProfile.replaceAll(' × ', 'x').replaceAll(' ', '_')}`;
+  document.title = `Kontrollberakning_${(window.activeReportName || reportProfile).replaceAll(' × ', 'x').replaceAll(' ', '_')}`;
   window.print();
 });
 window.addEventListener('afterprint', () => {

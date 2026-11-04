@@ -4,17 +4,35 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Beamconfigurator · Lyftok</title>
-  <link rel="stylesheet" href="style.css?v=strength-8">
-  <link rel="stylesheet" href="report.css?v=strength-8">
-  <script src="profiles.js?v=strength-8" defer></script>
-  <script src="beam.js?v=strength-8" defer></script>
-  <script src="report.js?v=strength-8" defer></script>
-  <script src="app.js?v=strength-8" defer></script>
+  <link rel="stylesheet" href="style.css?v=asymmetric-13">
+  <link rel="stylesheet" href="report.css?v=asymmetric-13">
+  <script src="profiles.js?v=asymmetric-13" defer></script>
+  <script src="beam.js?v=asymmetric-13" defer></script>
+  <script src="report.js?v=asymmetric-13" defer></script>
+  <script src="calculations.js?v=asymmetric-13" defer></script>
+  <script src="c-hook-report.js?v=asymmetric-13" defer></script>
+  <script src="load-cases.js?v=asymmetric-13" defer></script>
+  <script src="app.js?v=asymmetric-13" defer></script>
+  <script src="c2.js?v=asymmetric-13" defer></script>
+  <script src="c2-report.js?v=asymmetric-13" defer></script>
+  <script src="c2-case.js?v=asymmetric-13" defer></script>
+  <script src="c4.js?v=asymmetric-13" defer></script>
+  <script src="c4-report.js?v=asymmetric-13" defer></script>
+  <script src="c4-case.js?v=asymmetric-13" defer></script>
+  <script src="plate-shear.js?v=asymmetric-13" defer></script>
+  <script src="plate-shear-report.js?v=asymmetric-13" defer></script>
+  <script src="plate-shear-cases.js?v=asymmetric-13" defer></script>
+  <script src="asymmetric-beam.js?v=asymmetric-13" defer></script>
+  <script src="asymmetric-beam-report.js?v=asymmetric-13" defer></script>
+  <script src="asymmetric-beam-case.js?v=asymmetric-13" defer></script>
+  <script src="case-ui.js?v=asymmetric-13" defer></script>
 </head>
 <body>
-  <header><a class="brand" href="index.html"><span class="brand-icon">↥</span> Beamconfigurator</a><span class="tag">V0.8 · TIBNOR 2023 · TABELLDATA</span></header>
+  <header><a class="brand" href="index.html"><span class="brand-icon">↥</span> Beamconfigurator</a><span class="tag">V0.13 · BERÄKNINGSFALL</span></header>
   <main>
-    <div class="intro"><p class="eyebrow">LYFTOK / CENTRERAD LYFTPUNKT</p><h1>Rätt profil.<br><span>Från last till böjmotstånd.</span></h1><p>En första dimensionering av ett symmetriskt lyftok med två lika ändlaster. Ange din last och spännvidd för att jämföra kvadratiska VKR-profiler från Tibnors tabeller.</p></div>
+    <div class="intro"><p class="eyebrow">LYFTREDSKAP / BERÄKNING</p><h1>Från last<br><span>till beräkningsunderlag.</span></h1><p>Välj lyftok med mittlyft eller asymmetriskt lyft, C-krok eller något av fallen C1, C2, C4 och L1. Granska geometri, snittkrafter och antaganden och skapa en kontrollrapport för det valda fallet.</p></div>
+    <section class="card case-picker" aria-labelledby="case-picker-title"><div><p class="eyebrow">VÄLJ BERÄKNINGSFALL</p><h2 id="case-picker-title">Från last till kontroll.</h2></div><div><label for="case-select">Beräkningsfall</label><select id="case-select"></select><p id="case-description"></p></div></section>
+    <section id="beam-case" aria-label="Lyftok med mittlyft">
     <div class="workspace">
       <section class="card inputs" aria-labelledby="input-title">
         <div class="card-heading"><span class="step">01</span><h2 id="input-title">Förutsättningar</h2></div>
@@ -35,8 +53,16 @@
         <div id="result" aria-live="polite" aria-atomic="true"></div>
       </section>
     </div>
-    <section class="card comparison"><div class="card-heading"><span class="step">03</span><h2>Jämför profiler</h2><span id="profile-count" class="muted"></span></div><p class="section-copy">65 kvadratiska VKR-profiler, S355J2H enligt SS-EN 10210, ur Tibnors konstruktionstabeller 2023, sidorna 20–21. Sorterade efter stigande elastiskt W<sub>x</sub>. Grönt markerar minsta profil som klarar modellens krav. Välj valfri profil för en kontrollrapport. Aktuell tillgänglighet behöver bekräftas hos leverantör.</p><div class="table-wrap"><table><thead><tr><th scope="col">Profil (h × b × t, mm)</th><th scope="col">W<sub>x</sub>, tabell <small>cm³</small></th><th scope="col">Nyttjandegrad u</th><th scope="col">Vikt, tabell <small>kg/m</small></th><th scope="col">Bedömning</th><th scope="col">Rapportval</th></tr></thead><tbody id="profile-rows"></tbody></table></div><button id="toggle-profiles" type="button" class="secondary" aria-expanded="false">Visa alla profiler</button><div class="report-controls"><div><label for="report-reference">Rapportreferens (valfri)</label><input id="report-reference" maxlength="120" placeholder="Exempel: Lyftok LO-001"></div><div><p id="report-selection" aria-live="polite">Välj en profil i tabellen.</p><button id="open-report" type="button" disabled>Visa rapport / PDF <span>↗</span></button></div></div></section>
+    <section class="card comparison"><div class="card-heading"><span class="step">03</span><h2>Jämför profiler</h2><span id="profile-count" class="muted"></span></div><p class="section-copy">65 kvadratiska VKR-profiler, S355J2H enligt SS-EN 10210, ur Tibnors konstruktionstabeller 2023, sidorna 20–21. Sorterade efter stigande elastiskt W<sub>x</sub>. Ljusgult markerar minsta profil som klarar modellens krav. Välj valfri profil för en kontrollrapport. Aktuell tillgänglighet behöver bekräftas hos leverantör.</p><div class="table-wrap"><table><thead><tr><th scope="col">Profil (h × b × t, mm)</th><th scope="col">W<sub>x</sub>, tabell <small>cm³</small></th><th scope="col">Nyttjandegrad u</th><th scope="col">Vikt, tabell <small>kg/m</small></th><th scope="col">Bedömning</th><th scope="col">Rapportval</th></tr></thead><tbody id="profile-rows"></tbody></table></div><button id="toggle-profiles" type="button" class="secondary" aria-expanded="false">Visa alla profiler</button><div class="report-controls"><div><label for="report-reference">Rapportreferens (valfri)</label><input id="report-reference" maxlength="120" placeholder="Exempel: Lyftok LO-001"></div><div><p id="report-selection" aria-live="polite">Välj en profil i tabellen.</p><button id="open-report" type="button" disabled>Visa rapport / PDF <span>↗</span></button></div></div></section>
     <section class="notes"><div><p class="eyebrow">BERÄKNINGENS OMFATTNING</p><h2>Ett underlag för fortsatt konstruktion.</h2><p>Resultatet är en preliminär kontroll av balkens elastiska böjning. Det är inte en verifiering eller ett godkännande av ett komplett lyftredskap.</p></div><details><summary>Antaganden, formler och begränsningar</summary><ul><li>Statisk vertikal last, jämnt fördelad mellan ändarna. Balklängden antas vara lika med c-c-måttet. Mittlyftet antas kunna överföra krafterna utan att försvaga balken.</li><li>F = lastvikt × 9,82. Böjmoment M<sub>x</sub> = n × F × L / 4. Balkens egenvikt och annan utrustningsvikt försummas.</li><li>Böjspänning σ = M<sub>x</sub> / W<sub>x</sub>. Tillåten spänning σ<sub>till</sub> = 355 MPa används alltid. Nyttjandegrad u = σ / σ<sub>till</sub>. Minsta W<sub>x</sub> väljs bland de profiler som ger u ≤ 100 %.</li><li>W<sub>x</sub>, I, tvärsnittsarea och vikt per meter hämtas direkt från Tibnors konstruktionstabeller 2023, avsnitt VKR-rör, tryckta sidor 20–21 (PDF-sida 11). W<sub>x</sub> betecknar tabellens elastiska böjmotstånd; plastiskt W används inte. Tabellens multiplar omvandlas: I × 10⁴ till mm⁴ och W × 10³ till mm³. Tabellvärdena för I och W är oberoende avrundade och räknas inte om från varandra. Tabellen gäller S355J2H. Aktuell tillgänglighet, material och toleranser ska verifieras.</li><li>Nedböjning vid ändarna relativt mittpunkten: f = FL³/(48EI), med E = 210 000 MPa och ofaktorerad last utan egenvikt. Säkerhetsfaktorn n används inte i nedböjningen. Inget gränsvärde för nedböjning används i profilvalet.</li><li>Skjuvning, lokal buckling/tvärsnittsklass, vippning, utmattning, dynamik, snedlast, horisontalkrafter, hål, lyftöron, svetsar och lokal kraftintroduktion kontrolleras inte. Vald säkerhetsfaktor ersätter inte dessa kontroller.</li><li>Före tillverkning och användning krävs konstruktionskontroll med verkliga sektionsdata och tillämpliga krav, exempelvis EN 13155. Verktyget gör inget anspråk på att uppfylla denna standard.</li></ul><p><a href="data/SOURCE.md">Källdokumentation</a> · <a href="data/vkr-tibnor-2023.csv" download>Hämta profiltabellen som CSV</a></p></details></section>
+    </section>
+    <section id="custom-case" hidden aria-labelledby="case-title">
+      <div class="workspace"><section class="card inputs"><div class="card-heading"><span class="step">01</span><h2>Förutsättningar</h2></div><form id="case-form"></form><p id="case-error" class="error" role="alert" hidden></p><p class="help">S355 · σₜᵢₗₗ = 355 MPa · g = 9,82 m/s² · egenvikt försummas.</p></section>
+      <section class="card overview"><div class="card-heading"><span class="step">02</span><h2 id="case-title"></h2></div><div id="case-diagram"></div><div id="case-result" aria-live="polite"></div></section></div>
+      <section id="case-profiles" class="card comparison" hidden aria-labelledby="case-profiles-title"><div class="card-heading"><span class="step">03</span><h2 id="case-profiles-title">Jämför profiler</h2><span id="case-profiles-count" class="muted"></span></div><p class="section-copy">Sorterat efter stigande Wₓ. Ljusgult visar minsta profil som klarar modellens böjvillkor. Välj valfri profil för rapport; aktuellt rapportval har en marinblå ram.</p><div class="table-wrap"><table><thead><tr><th scope="col">Profil (h × b × t, mm)</th><th scope="col">Wₓ <small>cm³</small></th><th scope="col">Nyttjandegrad u</th><th scope="col">Vikt <small>kg/m</small></th><th scope="col">Bedömning</th><th scope="col">Rapportval</th></tr></thead><tbody id="case-profile-rows"></tbody></table></div><button id="case-profiles-toggle" type="button" class="secondary" aria-expanded="false">Visa alla profiler</button><p id="case-selected-profile" class="help" aria-live="polite"></p></section>
+      <section class="card case-report-card"><h2>Kontrollrapport</h2><p>Rapporten redovisar det valda beräkningsfallets geometri, indata, snittkontroller och modellantaganden. Inget intyg om hela lyftredskapets standarduppfyllelse lämnas.</p><div class="report-controls"><div><label for="case-reference">Rapportreferens (valfri)</label><input id="case-reference" maxlength="120" placeholder="Exempel: C-krok CK-001"></div><button id="case-report" type="button" disabled>Visa rapport / PDF <span>↗</span></button></div></section>
+      <section class="case-notes"><h2>Modell, formler och avgränsningar</h2><ul id="case-assumptions"></ul></section>
+    </section>
     <footer>Beamconfigurator <span>SI-enheter · elastisk balkmodell · S355 · σ<sub>till</sub> = 355 MPa</span></footer>
   </main>
   <dialog id="report-dialog" aria-label="Kontrollberäkningsrapport"><div class="report-actions"><p>Välj ”Spara som PDF” i utskriftsdialogen. Format: A4. Stäng av webbläsarens sidhuvud och sidfot.</p><button id="print-report" type="button">Spara som PDF</button><button id="close-report" type="button" class="secondary">Stäng rapport</button></div><div id="report-content"></div></dialog>
