@@ -3,6 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#003152">
+  <meta name="application-name" content="Beamconfigurator">
+  <meta name="apple-mobile-web-app-title" content="Lyftberäkning">
+  <link rel="icon" href="favicon.ico?v=1" sizes="16x16 32x32 48x48 64x64 128x128 256x256">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <title>Beamconfigurator · Lyftok</title>
   <link rel="stylesheet" href="style.css?v=asymmetric-13">
   <link rel="stylesheet" href="report.css?v=asymmetric-13">
@@ -28,7 +35,7 @@
   <script src="case-ui.js?v=asymmetric-13" defer></script>
 </head>
 <body>
-  <header><a class="brand" href="index.html"><span class="brand-icon">↥</span> Beamconfigurator</a><span class="tag">V0.13 · BERÄKNINGSFALL</span></header>
+  <header><a class="brand" href="index.html"><img class="brand-icon" src="icons/app-icon-192.png" width="32" height="32" alt=""> Beamconfigurator</a><span class="tag">V0.14 · BERÄKNINGSFALL</span></header>
   <main>
     <div class="intro"><p class="eyebrow">LYFTREDSKAP / BERÄKNING</p><h1>Från last<br><span>till beräkningsunderlag.</span></h1><p>Välj lyftok med mittlyft eller asymmetriskt lyft, C-krok eller något av fallen C1, C2, C4 och L1. Granska geometri, snittkrafter och antaganden och skapa en kontrollrapport för det valda fallet.</p></div>
     <section class="card case-picker" aria-labelledby="case-picker-title"><div><p class="eyebrow">VÄLJ BERÄKNINGSFALL</p><h2 id="case-picker-title">Från last till kontroll.</h2></div><div><label for="case-select">Beräkningsfall</label><select id="case-select"></select><p id="case-description"></p></div></section>

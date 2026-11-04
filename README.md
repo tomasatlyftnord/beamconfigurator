@@ -33,9 +33,30 @@ py -3 -m http.server 8000 --bind 127.0.0.1
 
 Öppna sedan `http://127.0.0.1:8000` i din webbläsare. Låt terminalen vara öppen medan du använder sidan och stoppa servern med **Ctrl+C** när du är klar. Servern är endast åtkomlig från din egen dator.
 
+### Skrivbordsgenväg med appikon (Windows, utan server)
+
+1. Behåll projektmappen på en fast plats på datorn.
+2. Högerklicka på `index.html` i Utforskaren. Välj vid behov **Visa fler alternativ → Skicka till → Skrivbord (skapa genväg)**.
+3. Högerklicka på den nya skrivbordsgenvägen och välj **Egenskaper → Genväg → Byt ikon**.
+4. Bläddra till projektets **`favicon.ico`**, välj ikonen och klicka **OK / Verkställ**.
+5. Byt gärna genvägens namn till **Lyftberäkning**.
+
+Genvägen öppnar verktyget i din vanliga webbläsare, utan Python, server eller internetanslutning. Flytta inte projektmappen efter att genvägen har skapats; om du gör det behöver både mål- och ikonvägen uppdateras. En befintlig genväg kan behöva tilldelas den nya ikonen manuellt.
+
+### Öppna som installerad webbapp i eget fönster
+
+Projektet innehåller nu ett webbmanifest och appikoner. För denna variant behöver sidan öppnas via den lokala webbservern ovan, exempelvis `http://127.0.0.1:8000`, eller från en HTTPS-adress. Vanlig `file://`-öppning av HTML-filen stöder inte normal webbappsinstallation.
+
+- **Edge:** använd **Appar → Installera den här webbplatsen som en app**, om alternativet visas.
+- **Chrome:** använd installationsikonen i adressfältet eller alternativet för att installera sidan som app i webbläsarens meny, om det finns. Menytexten kan variera mellan versioner.
+
+Webbappen kan då få en egen skrivbordsgenväg med projektets ikon och öppnas i ett separat fönster utan vanligt adressfält. När du använder en lokalt installerad webbapp måste lokalservern fortfarande vara igång när verktyget startas. Manifestet startar inte servern och ger inte i sig fristående offlinekörning. För användning utan server, välj filgenvägen ovan.
+
+Ikonfilerna finns i [icons](icons/README.md), med Windows-/webbläsarikonen [favicon.ico](favicon.ico) i projektroten. Samma motiv används i sidans huvud, webbläsarflik och appgenvägar.
+
 ### Om du ser en gammal version
 
-Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.13 · BERÄKNINGSFALL** högst upp.
+Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.14 · BERÄKNINGSFALL** högst upp.
 
 ## Färger
 
