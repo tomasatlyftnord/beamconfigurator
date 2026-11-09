@@ -7,7 +7,7 @@
   const n = (v, digits = 2) => v.toLocaleString('sv-SE', { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const metric = (label, value, unit = '') => `<div><span>${label}</span><strong>${n(value)} <small>${unit}</small></strong></div>`;
   const definition = {
-    id: 'c2', title: 'C2 – lastöra', view: 'calculation',
+    id: 'c2', title: 'C2 – lastöra', category: 'components', view: 'calculation',
     description: 'Snittkontroller av lastöra enligt ”Beräkning - C2.pdf”: två lika belastade sidor, skjuvning, böjning och drag.',
     fields: [
       { name: 'mass', label: 'Lastvikt m', unit: 'kg', default: 400, min: 0.001, max: 1000000, help: 'Total lastvikt före säkerhetsfaktor. PDF:en hänvisar till lasten från momentberäkningen.' },

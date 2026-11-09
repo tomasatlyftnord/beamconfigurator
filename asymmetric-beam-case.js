@@ -7,7 +7,7 @@
   const n = (v, digits = 2) => v.toLocaleString('sv-SE', { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const metric = (label, value, unit = '', digits = 2) => `<div><span>${label}</span><strong>${n(value, digits)} <small>${unit}</small></strong></div>`;
   const definition = {
-    id: 'asymmetric-beam', title: 'Lyftok med asymmetriskt lyft', view: 'calculation', profileSelection: true,
+    id: 'asymmetric-beam', title: 'Lyftok med asymmetriskt lyft', category: 'products', view: 'calculation', profileSelection: true,
     description: 'Valfri lyftpunkt mellan balkens ändar. Modellen räknar fram ändlasterna för jämvikt och väljer minsta Wₓ från VKR-tabellen.',
     fields: [
       { name: 'span', label: 'Balklängd / c-c lastpunkter L', unit: 'mm', default: 2000, min: 100, max: 20000, help: 'Lastpunkterna antas sitta i balkens vänstra och högra ände.' },

@@ -27,13 +27,13 @@
   }
   const registry = createRegistry();
   registry.register({
-    id: 'lifting-beam', title: 'Lyftok med mittlyft', view: 'catalogue', fields: [],
+    id: 'lifting-beam', title: 'Lyftok med mittlyft', category: 'products', view: 'catalogue', fields: [],
     description: 'Centrerad lyftpunkt och två lika ändlaster. Profilval från Tibnors kvadratiska VKR-tabell.',
     calculate: beam.calculate,
     renderReport: ({ input, profileName, reference }) => beamReports.render(profileName, input, reference)
   });
   registry.register({
-    id: 'c-hook', title: 'C-krok av utskuren plåt', view: 'calculation',
+    id: 'c-hook', title: 'C-krok av utskuren plåt', category: 'components', view: 'calculation',
     description: 'Rak C-form med lika armar och konstant rektangulärt tvärsnitt. Snittkontroller och idealiserad vippningskontroll av underarmen.',
     fields: [
       { name: 'mass', label: 'Maximal total lastvikt m', unit: 'kg', default: 400, min: 0.001, max: 1000000 },

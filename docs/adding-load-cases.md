@@ -21,6 +21,7 @@ Minsta modulkontrakt för en parametrisk vy:
 LoadCases.register({
   id: 'my-case', // unikt stabilt id
   title: 'Mitt beräkningsfall',
+  category: 'components', // 'components' = Komponenter, 'products' = Produkter
   description: 'Beskriv geometrin och den valda modellen.',
   fields: [
     { name: 'force', label: 'Kraft F', unit: 'N',
@@ -36,6 +37,11 @@ LoadCases.register({
 
 För valfält används `type: 'select'` och
 `options: [{ value: 'key', label: 'Beskrivning' }]`.
+
+Beräkningsfallsväljaren har två kategorier. L-/C-delar och enkla balkfall
+använder `category: 'components'`. Kompletta lyftok, H-ok, ramok och
+spridarok använder `category: 'products'`. Fall utan kategori placeras
+under Komponenter. Kategoriindelningen påverkar inte beräkningen eller rapporten.
 HTML från diagram-, resultat- och rapportfunktioner betraktas som betrodd
 programkod; escape:a alltid användartext, exempelvis rapportreferenser.
 

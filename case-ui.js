@@ -13,7 +13,16 @@
   const profileToggle = document.getElementById('case-profiles-toggle');
   let active, input, result;
   const escape = text => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  for (const definition of registry.list()) selector.add(new Option(definition.title, definition.id));
+  const definitions = registry.list();
+  for (const [category, label] of [['components', 'Komponenter'], ['products', 'Produkter']]) {
+    const cases = definitions.filter(definition => (definition.category === 'products' ? 'products' : 'components') === category);
+    if (!cases.length) continue;
+    const group = document.createElement('optgroup');
+    group.label = label;
+    for (const definition of cases) group.append(new Option(definition.title, definition.id));
+    selector.append(group);
+  }
+  if (registry.get('lifting-beam')) selector.value = 'lifting-beam';
   function read() {
     return Object.fromEntries(active.fields.map(field => [field.name, field.type === 'select' ? form.elements.namedItem(field.name).value : form.elements.namedItem(field.name).valueAsNumber]));
   }
@@ -64,9 +73,12 @@
     if (active.view === 'catalogue') return;
     const values = saved.get(active.id) || {};
     document.getElementById('case-title').textContent = active.title;
-    form.innerHTML = active.fields.map(field => `<div class="case-field"><label for="case-${field.name}">${escape(field.label)}</label>${field.type === 'select'
-      ? `<select id="case-${field.name}" name="${field.name}">${field.options.map(option => `<option value="${option.value}" ${option.value === (values[field.name] ?? field.default) ? 'selected' : ''}>${escape(option.label)}</option>`).join('')}</select>`
-      : `<div class="unit-input"><input id="case-${field.name}" name="${field.name}" type="number" min="${field.min}" max="${field.max}" step="any" required value="${escape(values[field.name] ?? field.default)}">${field.unit ? `<span>${field.unit}</span>` : ''}</div>`}${field.help ? `<p class="help">${escape(field.help)}</p>` : ''}</div>`).join('') + '<button type="submit">Beräkna <span>→</span></button>';
+    form.innerHTML = active.fields.map(field => {
+      const help = field.help;
+      return `<div class="case-field"><label for="case-${field.name}">${escape(field.label)}</label>${field.type === 'select'
+      ? `<select id="case-${field.name}" name="${field.name}">${field.options.map(option => `<option value="${escape(option.value)}" ${option.value === (values[field.name] ?? field.default) ? 'selected' : ''}>${escape(option.label)}</option>`).join('')}</select>`
+      : `<div class="unit-input"><input id="case-${field.name}" name="${field.name}" type="number" min="${field.min}" max="${field.max}" step="any" required value="${escape(values[field.name] ?? field.default)}">${field.unit ? `<span>${field.unit}</span>` : ''}</div>`}${help ? `<p class="help">${escape(help)}</p>` : ''}</div>`;
+    }).join('') + '<button type="submit">Beräkna <span>→</span></button>';
     document.getElementById('case-assumptions').innerHTML = active.assumptions.map(text => `<li>${escape(text)}</li>`).join('');
     updateCase();
   }

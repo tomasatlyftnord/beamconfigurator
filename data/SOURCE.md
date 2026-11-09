@@ -1,5 +1,7 @@
 # Källa till VKR-data
 
+Detta dokument gäller de tidigare lyftoksmodellerna. Den nya arbetsbokens 204 profiler och tio beräkningsfall har separat [källdokumentation och granskningspunkter](WORKBOOK.md).
+
 Tibnors konstruktionstabeller, fil `konstruktionstabellerSWE-2023.pdf`, avsnitt 008 VKR-rör, tryckta sidor 20–21 (PDF-sida 11). Kvadratiska S355J2H enligt SS-EN 10210. 65 tabellrader har extraherats från användarens bifogade PDF.
 
 Källa: https://www.tibnor.se/medias/konstruktionstabellerSWE-2023.pdf

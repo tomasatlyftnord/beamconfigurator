@@ -6,8 +6,8 @@ require('../c4-case.js');
 require('../plate-shear-cases.js');
 require('../asymmetric-beam-case.js');
 
-test('lastfallsregistret innehåller sju fall med egna beräkningar', () => {
-  assert.deepEqual(registry.list().map(c => c.id), ['lifting-beam', 'c-hook', 'c2', 'c4', 'c1', 'l1', 'asymmetric-beam']);
+test('lastfallsregistret bevarar sju tidigare fall med egna beräkningar', () => {
+  assert.deepEqual(registry.list().filter(c => !c.group).map(c => c.id), ['lifting-beam', 'c-hook', 'c2', 'c4', 'c1', 'l1', 'asymmetric-beam']);
   const beam = registry.get('lifting-beam').calculate({ mass: 400, span: 350, factor: 2 });
   assert.equal(beam.chosen.force, 3928);
   const hook = registry.get('c-hook');

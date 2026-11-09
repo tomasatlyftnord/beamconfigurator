@@ -12,7 +12,7 @@
   ];
   for (const spec of cases) {
     registry.register({
-      id: spec.id, title: spec.title, view: 'calculation', description: spec.description,
+      id: spec.id, title: spec.title, category: 'components', view: 'calculation', description: spec.description,
       fields: [
         { name: 'mass', label: 'Lastvikt m', unit: 'kg', default: 400, min: 0.001, max: 1000000, help: 'Last på denna detalj före säkerhetsfaktor. PDF:en saknar ifyllt lastvärde; startvärdet är ett exempel.' },
         { name: 'factor', label: 'Säkerhetsfaktor n', default: 2, min: 1, max: 10, help: 'PDF:ens värde n = 2 är förvalt.' },

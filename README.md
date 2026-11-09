@@ -1,6 +1,8 @@
 # Beamconfigurator
 
-Fristående svensk webbsida med valbara beräkningsfall för **lyftok med mittlyft**, **lyftok med asymmetriskt lyft**, **C-krok utskuren ur plåt**, **C2 – lastöra**, **C4 – lastkrok**, **C1 – ändplåt** och **L1 – skjuvkontroll enligt bifogade beräkningsmallar**. C-kroken har separata snittkontroller för böjning, normalkraft och skjuvning samt en idealiserad vippningskontroll av underarmen. Tillåten normalspänning σ_till är 355 MPa (S355).
+Fristående svensk webbsida för lyftberäkningar. Alla **tio beräkningsfall** i **Standardiserade beräkningar 0.1 – granskning** finns som valbara fall med arbetsbokens profiltabell, knäcktabell, samtliga delberäkningar och PDF-rapporter. De tidigare sju fallen med PDF-/Tibnor-underlag finns också kvar. Tillåten normalspänning σ_till är 355 MPa (S355).
+
+Arbetsboken innehåller granskningspunkter och vissa ofullständiga profildata. Dessa redovisas vid berört resultat och i rapporten. Numerisk överensstämmelse med underlaget innebär inte att konstruktionen är verifierad. Se [täckning och källgranskning](data/WORKBOOK.md).
 
 ## Kör lokalt
 
@@ -15,7 +17,7 @@ Fristående svensk webbsida med valbara beräkningsfall för **lyftok med mittly
 2. Öppna den uppackade eller klonade projektmappen.
 3. Dubbelklicka på `index.html`, eller välj **Öppna med → Google Chrome / Microsoft Edge / Firefox**.
 
-Ingen installation av paket, byggning eller server behövs. När projektet har hämtats fungerar beräkning och rapportvisning utan internetanslutning. Behåll hela projektmappens struktur, inklusive alla `.js`- och `.css`-filer bredvid `index.html`. C-kroken, C2 och lastfallsvalet behöver också `calculations.js`, `c-hook-report.js`, `load-cases.js`, `case-ui.js`, `c2.js`, `c2-report.js`, `c2-case.js`, `c4.js`, `c4-report.js`, `c4-case.js`, `plate-shear.js`, `plate-shear-report.js`, `plate-shear-cases.js`, `asymmetric-beam.js`, `asymmetric-beam-report.js` och `asymmetric-beam-case.js`. Behåll även mappen `data` för källdokumentationen och den nedladdningsbara CSV-tabellen. Python och Node.js behövs inte för att använda programmet på detta sätt.
+Ingen installation av paket, byggning eller server behövs. När projektet har hämtats fungerar beräkning och rapportvisning utan internetanslutning. Behåll hela projektmappens struktur, inklusive alla `.js`- och `.css`-filer bredvid `index.html`. Behåll också `workbook-data.js`, `workbook-engine.js`, `workbook-report.js` och `workbook-cases.js` samt mappen `data` för källdokumentationen och de nedladdningsbara tabellerna. Python och Node.js behövs inte för att använda programmet på detta sätt.
 
 ### Alternativ: kör med en lokal webbserver
 
@@ -56,15 +58,39 @@ Ikonfilerna finns i [icons](icons/README.md), med Windows-/webbläsarikonen [fav
 
 ### Om du ser en gammal version
 
-Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.14 · BERÄKNINGSFALL** högst upp.
+Hämta de senaste projektfilerna (eller kör `git pull` i ett klonat repo), öppna rätt projektmapp och ladda om sidan med **Ctrl+Shift+R** i Chrome/Edge på Windows/Linux eller **Cmd+Shift+R** på Mac. Den aktuella versionen är märkt **V0.19 · BERÄKNINGSFALL** högst upp.
 
 ## Färger
 
 Webbsidan och PDF-rapporten använder Lyftnords marinblå `#003152` och gula `#FFD200`. Gul används som accent och på primära knappar, med marinblå text.
 
+## Layout
+
+Applikationen använder den klassiska layouten från `7ce79bc`, med större diagram och resultat i rutor. Alla 17 beräkningsfall och PDF-rapporter finns i samma vy. Beräkningsfallsväljaren har två kategorier: **Komponenter** för L-/C-delar och enkla balkar (KB2, KB5 och KB6), och **Produkter** för lyftok med mittlyft/asymmetriskt lyft, H-ok, ramok, spridarok och semispridarok. Inmatade värden och profilval bevaras när du byter beräkningsfall medan sidan är öppen.
+
+## Arbetsbokens beräkningsfall
+
+Startfallet är åter **Lyftok med mittlyft**, med samma sidlayout som i commit `7ce79bc`. De tio tillagda fallen finns kvar i beräkningsfallsväljaren. Arbetsboken tillför följande fall, fördelade mellan **Komponenter** och **Produkter**:
+
+| Fall | Beräkningar |
+| --- | --- |
+| L1, C1 | Medelskjuvspänning och nyttjandegrad för en respektive två skjuvareor |
+| KB5, KB6, KB2 | Central punktlast, asymmetrisk punktlast respektive konsolbalk: böjning, nyttjandegrad och nedböjning mot L/200 |
+| H-ok | Separata böj- och nedböjningskontroller av huvudbalk och tvärbalkar |
+| Ramok | Kraftkomponenter, tryck och knäckning i två riktningar i ramplanet |
+| C-krok av profiler | Arm- och ryggspänningar, deformationer, totalutböjning och arbetsbokens elastiska Mcr-jämförelse |
+| Spridarok | Tryckkraft, slankhet, knäcktabell och nyttjandegrad |
+| Semispridarok | Tryck, knäckning, böjning och arbetsbokens kombinationsregel |
+
+Ange måtten och välj profil i formuläret. De 204 profilerna hämtas från arbetsboken, inklusive rektangulära rör och HEA. `⚠` markerar en granskningsanmärkning; saknade nödvändiga värden och HEA:s felaktiga areaenhet blockerar berörda beräkningar. Startvärdena motsvarar de sparade Excel-exemplen. KB6:s läge avser punktlasten mellan två stöd enligt arbetsboken; det tidigare fallet **Lyftok med asymmetriskt lyft** har sin egen lastmodell.
+
+Resultatet använder samma resultatrutor och diagramlayout som de ursprungliga fallen. Kontrolltabell, granskningsanmärkningar, profilvärden och listan med alla Excelceller och formler kan fällas ut. Den första anmärkningen och antalet ytterligare anmärkningar visas direkt vid resultatet. Knäcktabellen väljer nästa **strikt större** slankhet enligt underlaget. Granskningsanmärkningarna följer med i PDF-rapporten; C-krokens och semispridarokets tveksamma uttryck används spårbart utan tysta rättningar. Rapporterna har en sammanställning och följande sidor med formler, resultat och cellreferenser.
+
+[Detaljerad täckning, avvikelser och importinstruktioner](data/WORKBOOK.md) · [Profiltabell (CSV)](data/workbook-profiles-0.1.csv) · [Knäcktabell (CSV)](data/workbook-buckling-0.1.csv)
+
 ## Användning
 
-Välj först **Beräkningsfall** högst upp på sidan:
+De tidigare modellerna används så här:
 
 - **Lyftok med mittlyft:** ange c-c mellan lastpunkterna, total lastvikt och säkerhetsfaktor n. Minsta W_x väljs bland Tibnors profiler som klarar modellens böjvillkor. Nedböjning vid brukslast redovisas men styr inte valet.
 - **C-krok av utskuren plåt:** ange plåttjocklek t, tvärsnittshöjd h, armlängd L₁ = L₂, höjd L mellan armarnas centrumlinjer, lastvikt och säkerhetsfaktor. Samma tvärsnitt används i hela den raka C-ramen. Diagrammet visar måttdefinitionerna. Armlängderna är lika så att motriktade vertikala krafter ligger i samma lodlinje.
@@ -87,7 +113,7 @@ C-krokens vippning avser endast underarmen som en rak konsol med idealiserat sid
 
 1. Ange last, c-c-mått och säkerhetsfaktor n.
 2. För lyftok med mittlyft eller asymmetriskt lyft: välj en profil med radioknappen i kolumnen **Rapportval** under **Jämför profiler**. Använd **Visa alla profiler** för hela tabellen. Rapportvalet är oberoende av det automatiska minsta profilvalet.
-3. För C-kroken, C2, C4, C1 och L1 behövs inget profilval. Fyll eventuellt i en rapportreferens och välj **Visa rapport / PDF** under resultatet.
+3. Arbetsbokens fall använder profilen som valts i formuläret. För de tidigare plåtfallen C-kroken, C2, C4, C1 och L1 behövs inget profilval. Fyll eventuellt i en rapportreferens och välj **Visa rapport / PDF** under resultatet.
 4. Granska rapporten och klicka **Spara som PDF**. Välj **Spara som PDF** i webbläsarens utskriftsdialog, A4 och utan webbläsarens sidhuvud/sidfot.
 
 Lyftok med mittlyft/asymmetriskt lyft, C-krok, C2 och C4 har rapporter på två A4-sidor; de enklare C1- och L1-kontrollerna har varsin A4-sida. Rapporterna innehåller det valda fallets indata, källhänvisning, tillämpliga snittkontroller samt formler med insatta värden. Rapporten saknar produktnamn, datum och länkar i sidhuvud/sidfot. Sidnumrering och eventuell rapportreferens behålls. Utskriftslayouten använder egna inre marginaler för att undvika webbläsarens automatiska sidhuvud/sidfot. Egenvikt försummas. Lyftokets nedböjning räknas utan säkerhetsfaktor n och utan godkänd/underkänd-bedömning eftersom inget gränsvärde anges. Även en för svag profil kan väljas, men dess rapport markerar överskridet böjvillkor. Ogiltiga indata blockerar rapportöppning. Varje ny rapport använder aktuella indata; en redan öppnad rapport är en ögonblicksbild.
@@ -181,8 +207,11 @@ node tests/plate-shear.test.js
 node tests/plate-shear-report.test.js
 node tests/asymmetric-beam.test.js
 node tests/asymmetric-beam-report.test.js
+node tests/workbook-engine.test.js
+node tests/workbook-report.test.js
+node tests/workbook-cases.test.js
 ```
 
 Testerna verifierar tabellvärden, handberäknade snittkrafter och spänningar, nedböjning, enhetsomvandling, registerutökning, rapportvärden, modellgränser och felhantering. Konsolens vippningskoefficient kontrolleras även genom en oberoende numerisk egenvärdeslösning.
 
-Med Node.js 22+ och Chromium: `node tests/browser.cjs`. Integrationstestet verifierar alla sju fallen, växling med separata indata, rapportknappar, felhantering, vippningsavgränsning och mobilbredd. Riktiga PDF-filer skapas i systemets temporära katalog: `beam-report-example.pdf`, `beam-400kg-350mm.pdf`, `c-hook-report-example.pdf`, `c2-report-example.pdf`, `c4-report-example.pdf`, `c1-report-example.pdf`, `l1-report-example.pdf` och `asymmetric-beam-report-example.pdf`. Välj annan sökväg för den första med `BEAM_TEST_PDF`; ange vid behov Chromium-sökväg med `CHROMIUM_BIN`.
+Med Node.js 22+ och Chromium: `node tests/browser.cjs`. Integrationstestet verifierar alla 17 fallen, växling med separata indata, profilval, rapportknappar, felhantering, vippningsavgränsning och mobilbredd. Arbetsbokens PDF:er kontrolleras även för sidöverflöd och att anmärkningar följer med. Riktiga PDF-filer skapas i systemets temporära katalog för alla fall, exempelvis `beam-report-example.pdf`, `c-hook-report-example.pdf`, `asymmetric-beam-report-example.pdf` och `wb-kb5-report-example.pdf`. Välj annan sökväg för den första med `BEAM_TEST_PDF`; ange vid behov Chromium-sökväg med `CHROMIUM_BIN`. Vid en miljöpolicy som blockerar `file://` hoppas endast den kontrollen över med angivet skäl; HTTP-prov och PDF-kontroller körs ändå.

@@ -7,7 +7,7 @@
   const n = (v, digits = 2) => v.toLocaleString('sv-SE', { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const metric = (label, value, unit = '', digits = 2) => `<div><span>${label}</span><strong>${n(value, digits)} <small>${unit}</small></strong></div>`;
   const definition = {
-    id: 'c4', title: 'C4 – lastkrok', view: 'calculation',
+    id: 'c4', title: 'C4 – lastkrok', category: 'components', view: 'calculation',
     description: 'Lastkrok enligt ”Rutin_Beräkning av C4 - Lastkrok.pdf”: medelskjuvning, konsolböjning och böjnedböjning.',
     fields: [
       { name: 'mass', label: 'Lastvikt m', unit: 'kg', default: 125, min: 0.001, max: 1000000, help: 'Källexemplet använder 125 kg.' },
